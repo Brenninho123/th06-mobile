@@ -42,7 +42,11 @@ android {
         release {
             minifyEnabled false
             def keystorePath = System.getenv('TH06_KEYSTORE_PATH')
-            signingConfig (keystorePath != null && file(keystorePath).exists()) ? signingConfigs.release : signingConfigs.debug
+            if (keystorePath != null && file(keystorePath).exists()) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
         }
     }
 
