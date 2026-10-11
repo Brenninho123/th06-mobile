@@ -32,6 +32,8 @@ jobs:
           "$SDKMANAGER" --install "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1" > /dev/null
 
       - uses: gradle/actions/setup-gradle@v5
+        with:
+          validate-wrappers: false
 
       - name: Decode signing key
         if: ${{ env.KEYSTORE_BASE64 != '' }}
