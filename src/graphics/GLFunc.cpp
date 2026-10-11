@@ -1,4 +1,5 @@
 #include "GLFunc.hpp"
+#include "GameWindow.hpp"
 
 #include <SDL2/SDL_video.h>
 
@@ -18,6 +19,7 @@ void GLFuncTable::ResolveFunctions(bool glesContext)
     TRY_RESOLVE_FUNCTION(glDeleteTextures)
     TRY_RESOLVE_FUNCTION(glDepthFunc)
     TRY_RESOLVE_FUNCTION(glDepthMask)
+    TRY_RESOLVE_FUNCTION(glDisable)
     TRY_RESOLVE_FUNCTION(glDisableClientState)
     TRY_RESOLVE_FUNCTION(glDrawArrays)
     TRY_RESOLVE_FUNCTION(glEnable)
@@ -35,6 +37,7 @@ void GLFuncTable::ResolveFunctions(bool glesContext)
     TRY_RESOLVE_FUNCTION(glPopMatrix)
     TRY_RESOLVE_FUNCTION(glPushMatrix)
     TRY_RESOLVE_FUNCTION(glReadPixels)
+    TRY_RESOLVE_FUNCTION(glScissor)
     TRY_RESOLVE_FUNCTION(glShadeModel)
     TRY_RESOLVE_FUNCTION(glTexCoordPointer)
     TRY_RESOLVE_FUNCTION(glTexEnvfv)
@@ -110,4 +113,22 @@ void GLFuncTable::glDepthRangef(GLclampf near_val, GLclampf far_val)
     {
         this->glDepthRange(near_val, far_val);
     }
+}
+
+void GLClearLetterboxed(GLbitfield mask, const GLfloat clearColor[4])
+{
+    if (!g_WindowMetrics.IsLetterboxed() || !(mask & GL_COLOR_BUFFER_BIT))
+    {
+        g_glFuncTable.glClear(mask);
+        return;
+    }
+
+    g_glFuncTable.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    g_glFuncTable.glClear(GL_COLOR_BUFFER_BIT);
+    g_glFuncTable.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+
+    g_glFuncTable.glScissor(VIEWPORT_OFF_X, VIEWPORT_OFF_Y, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+    g_glFuncTable.glEnable(GL_SCISSOR_TEST);
+    g_glFuncTable.glClear(mask);
+    g_glFuncTable.glDisable(GL_SCISSOR_TEST);
 }

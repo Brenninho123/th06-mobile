@@ -1,0 +1,9 @@
+[submodule "android/deps/SDL"]
+	path = android/deps/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "android/deps/SDL_image"]
+	path = android/deps/SDL_image
+	url = https://github.com/libsdl-org/SDL_image.git
+[submodule "android/deps/SDL_ttf"]
+	path = android/deps/SDL_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git

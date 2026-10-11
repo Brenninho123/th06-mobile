@@ -18,8 +18,8 @@ GfxInterface *FixedFunctionGL::Init()
     SDL_Init(SDL_INIT_VIDEO);
 
     u32 flags = SDL_WINDOW_OPENGL;
-    i32 height = GAME_WINDOW_HEIGHT_REAL;
-    i32 width = GAME_WINDOW_WIDTH_REAL;
+    i32 height = GAME_WINDOW_HEIGHT_DEFAULT;
+    i32 width = GAME_WINDOW_WIDTH_DEFAULT;
     i32 x = SDL_WINDOWPOS_UNDEFINED;
     i32 y = SDL_WINDOWPOS_UNDEFINED;
 
@@ -27,6 +27,10 @@ GfxInterface *FixedFunctionGL::Init()
     {
         flags |= SDL_WINDOW_FULLSCREEN;
     }
+
+#ifdef __ANDROID__
+    flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALLOW_HIGHDPI;
+#endif
     FixedFunctionGL *self = new FixedFunctionGL();
 
     SDL_Window *window = SDL_CreateWindow(TH_WINDOW_TITLE, x, y, width, height, flags);
@@ -277,6 +281,10 @@ void FixedFunctionGL::GetDepthRange(f32 *depthRange)
 
 void FixedFunctionGL::SetClearColor(f32 r, f32 g, f32 b, f32 a)
 {
+    this->clearColor[0] = r;
+    this->clearColor[1] = g;
+    this->clearColor[2] = b;
+    this->clearColor[3] = a;
     g_glFuncTable.glClearColor(r, g, b, a);
 }
 
@@ -299,7 +307,7 @@ void FixedFunctionGL::Clear(u32 clearBits)
     if (clearBits & CLEAR_DEPTH_BUFFER)
         mask |= GL_DEPTH_BUFFER_BIT;
 
-    g_glFuncTable.glClear(mask);
+    GLClearLetterboxed(mask, this->clearColor);
 }
 
 void FixedFunctionGL::SetDepthRange(f32 nearPlane, f32 farPlane)

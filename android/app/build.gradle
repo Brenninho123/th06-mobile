@@ -1,0 +1,95 @@
+plugins {
+    id 'com.android.application'
+}
+
+def sdlJavaDir = file('../deps/SDL/android-project/app/src/main/java')
+def fallbackFontUrl = 'https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/SubsetOTF/JP/NotoSansJP-Regular.otf'
+def generatedAssetsDir = layout.buildDirectory.dir('generated/th06Assets')
+
+android {
+    namespace 'com.brenninho.th06mobile'
+    compileSdk 35
+    ndkVersion '27.2.12479018'
+
+    defaultConfig {
+        applicationId 'com.brenninho.th06mobile'
+        minSdk 21
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_static', '-DTH06_VENDORED_SDL=ON'
+                abiFilters 'arm64-v8a', 'armeabi-v7a'
+            }
+        }
+    }
+
+    signingConfigs {
+        release {
+            def keystorePath = System.getenv('TH06_KEYSTORE_PATH')
+            if (keystorePath != null && file(keystorePath).exists()) {
+                storeFile file(keystorePath)
+                storePassword System.getenv('TH06_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('TH06_KEY_ALIAS')
+                keyPassword System.getenv('TH06_KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            def keystorePath = System.getenv('TH06_KEYSTORE_PATH')
+            signingConfig (keystorePath != null && file(keystorePath).exists()) ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += sdlJavaDir
+            assets.srcDirs += generatedAssetsDir
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path file('../../CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+def downloadFallbackFont = tasks.register('downloadFallbackFont') {
+    def output = generatedAssetsDir.get().file('NotoSansJP-Regular.ttf').asFile
+    outputs.file(output)
+    doLast {
+        if (!output.exists()) {
+            output.parentFile.mkdirs()
+            def temp = new File(output.parentFile, output.name + '.part')
+            new URL(fallbackFontUrl).withInputStream { input ->
+                temp.withOutputStream { out -> out << input }
+            }
+            temp.renameTo(output)
+        }
+    }
+}
+
+tasks.named('preBuild') {
+    dependsOn downloadFallbackFont
+    doFirst {
+        if (!new File(sdlJavaDir, 'org/libsdl/app/SDLActivity.java').exists()) {
+            throw new GradleException('SDL sources are missing. Run: git submodule update --init --recursive')
+        }
+    }
+}

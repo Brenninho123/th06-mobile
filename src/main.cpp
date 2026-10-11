@@ -7,6 +7,7 @@
 #include "FileSystem.hpp"
 #include "GameErrorContext.hpp"
 #include "GameWindow.hpp"
+#include "Platform.hpp"
 #include "SoundPlayer.hpp"
 #include "Stage.hpp"
 #include "Supervisor.hpp"
@@ -20,6 +21,8 @@ int main(int argc, char *argv[])
     (void)argv;
 
     i32 renderResult = 0;
+
+    Platform::Init();
     //    MSG msg;
     //    i32 waste1, waste2, waste3, waste4, waste5, waste6;
 
@@ -87,6 +90,7 @@ restart:
             {
                 goto stop;
             }
+            Platform::HandleEvent(e);
         }
 
         renderResult = g_GameWindow.Render();

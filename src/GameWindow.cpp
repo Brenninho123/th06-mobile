@@ -17,6 +17,8 @@
 #include <cstring>
 
 GameWindow g_GameWindow;
+WindowMetrics g_WindowMetrics = {GAME_WINDOW_WIDTH_DEFAULT, GAME_WINDOW_HEIGHT_DEFAULT, GAME_WINDOW_WIDTH_DEFAULT,
+                                 GAME_WINDOW_HEIGHT_DEFAULT, 0, 0};
 GfxInterface *g_GfxBackend;
 i32 g_TickCountToEffectiveFramerate;
 f64 g_LastFrameTime;
@@ -182,9 +184,50 @@ void GameWindow::Present()
     return;
 }
 
+void WindowMetrics::Update(i32 width, i32 height)
+{
+    this->drawableWidth = width;
+    this->drawableHeight = height;
+
+    if ((std::int64_t)width * GAME_WINDOW_HEIGHT > (std::int64_t)height * GAME_WINDOW_WIDTH)
+    {
+        this->viewportHeight = height;
+        this->viewportWidth = (i32)(((std::int64_t)height * GAME_WINDOW_WIDTH) / GAME_WINDOW_HEIGHT);
+    }
+    else
+    {
+        this->viewportWidth = width;
+        this->viewportHeight = (i32)(((std::int64_t)width * GAME_WINDOW_HEIGHT) / GAME_WINDOW_WIDTH);
+    }
+
+    this->viewportOffX = (width - this->viewportWidth) / 2;
+    this->viewportOffY = (height - this->viewportHeight) / 2;
+}
+
+void GameWindow::RefreshDrawableSize()
+{
+    SDL_Window *window = SDL_GL_GetCurrentWindow();
+    i32 width = 0;
+    i32 height = 0;
+
+    if (window == NULL || SDL_GL_GetCurrentContext() == NULL)
+    {
+        return;
+    }
+
+    SDL_GL_GetDrawableSize(window, &width, &height);
+
+    if (width > 0 && height > 0)
+    {
+        g_WindowMetrics.Update(width, height);
+    }
+}
+
 void GameWindow::CreateGameWindow()
 {
     SDL_Init(SDL_INIT_GAMECONTROLLER);
+
+    g_WindowMetrics.Update(GAME_WINDOW_WIDTH_DEFAULT, GAME_WINDOW_HEIGHT_DEFAULT);
 
     for (u32 i = 0; i < ARRAY_SIZE(s_RenderBackends); i++)
     {
@@ -196,6 +239,8 @@ void GameWindow::CreateGameWindow()
         }
         utils::DebugPrint2("Renderer creation for backend %s failed", s_RenderBackends[i].name);
     }
+
+    RefreshDrawableSize();
 
     g_GameWindow.lastActiveAppValue = 1;
 }

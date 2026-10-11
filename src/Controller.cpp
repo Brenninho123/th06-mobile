@@ -6,6 +6,7 @@
 
 #include "GameErrorContext.hpp"
 #include "Supervisor.hpp"
+#include "TouchInput.hpp"
 #include "i18n.hpp"
 #include "utils.hpp"
 
@@ -385,6 +386,8 @@ u16 Controller::GetInput(void)
     buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_Q, SDL_SCANCODE_Q);
     buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_S, SDL_SCANCODE_S);
     buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_ENTER, SDL_SCANCODE_RETURN);
+    buttons |= KEYBOARD_KEY_PRESSED(TH_BUTTON_MENU, SDL_SCANCODE_AC_BACK);
+    buttons |= TouchInput::GetButtons();
 
     return Controller::GetControllerInput(buttons);
 }

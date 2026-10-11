@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="import"
+        android:enabled="true"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:shortcutShortLabel="@string/shortcut_import">
+        <intent
+            android:action="com.brenninho.th06mobile.IMPORT"
+            android:targetPackage="com.brenninho.th06mobile"
+            android:targetClass="com.brenninho.th06mobile.SetupActivity" />
+    </shortcut>
+</shortcuts>

@@ -25,6 +25,7 @@ struct GLFuncTable
     void(GLAPIENTRY *glDeleteTextures)(GLsizei n, const GLuint *textures);
     void(GLAPIENTRY *glDepthFunc)(GLenum func);
     void(GLAPIENTRY *glDepthMask)(GLboolean flag);
+    void(GLAPIENTRY *glDisable)(GLenum cap);
     void(GLAPIENTRY *glDisableClientState)(GLenum cap);
     void(GLAPIENTRY *glDrawArrays)(GLenum mode, GLint first, GLsizei count);
     void(GLAPIENTRY *glEnable)(GLenum cap);
@@ -41,6 +42,7 @@ struct GLFuncTable
     void(GLAPIENTRY *glMultMatrixf)(const GLfloat *m);
     void(GLAPIENTRY *glPopMatrix)(void);
     void(GLAPIENTRY *glPushMatrix)(void);
+    void(GLAPIENTRY *glScissor)(GLint x, GLint y, GLsizei width, GLsizei height);
     void(GLAPIENTRY *glReadPixels)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
                                    GLvoid *pixels);
     void(GLAPIENTRY *glShadeModel)(GLenum mode);
@@ -92,3 +94,5 @@ struct GLFuncTable
 };
 
 extern GLFuncTable g_glFuncTable;
+
+void GLClearLetterboxed(GLbitfield mask, const GLfloat clearColor[4]);

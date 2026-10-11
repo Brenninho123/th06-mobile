@@ -14,8 +14,8 @@ GfxInterface *Software::Init()
     SDL_Init(SDL_INIT_VIDEO);
 
     u32 flags = 0;
-    i32 height = GAME_WINDOW_HEIGHT_REAL;
-    i32 width = GAME_WINDOW_WIDTH_REAL;
+    i32 height = GAME_WINDOW_HEIGHT_DEFAULT;
+    i32 width = GAME_WINDOW_WIDTH_DEFAULT;
     i32 x = SDL_WINDOWPOS_UNDEFINED;
     i32 y = SDL_WINDOWPOS_UNDEFINED;
 

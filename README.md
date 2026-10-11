@@ -1,7 +1,62 @@
-[![Discord][discord-badge]][discord] <- click here to join discord server.
+# EoSD Mobile
 
-[discord]: https://discord.gg/VyGwAjrh9a
-[discord-badge]: https://img.shields.io/discord/1147558514840064030?color=%237289DA&logo=discord&logoColor=%23FFFFFF
+[![Android](https://github.com/Brenninho123/th06-mobile/actions/workflows/android.yml/badge.svg)](https://github.com/Brenninho123/th06-mobile/actions/workflows/android.yml)
+
+A mobile port of 東方紅魔郷 ～ the Embodiment of Scarlet Devil (1.02h), built on top of the
+[portable branch](https://github.com/GensokyoClub/th06/tree/portable) of the GensokyoClub decompilation.
+
+No game data is included. You need your own copy of Touhou 6 version 1.02h.
+
+## Android
+
+### Installing
+
+1. Download `th06-mobile.apk` from the latest [Actions run](https://github.com/Brenninho123/th06-mobile/actions/workflows/android.yml) or [release](https://github.com/Brenninho123/th06-mobile/releases) and install it.
+2. Copy your game folder to the phone (the folder with `紅魔郷CM.DAT`, `紅魔郷ED.DAT`, `紅魔郷IN.DAT`, `紅魔郷MD.DAT`, `紅魔郷ST.DAT`, `紅魔郷TL.DAT` and the `bgm` folder).
+3. Open the app, tap **Select game folder** and pick that folder. The files are copied into the app once.
+
+DAT files whose Japanese names were garbled by a zip tool are detected by their suffix (`CM.DAT`, `ST.DAT`, ...)
+and renamed automatically. `msgothic.ttc` is used if present, otherwise a bundled Noto Sans JP is used.
+Music requires the `bgm/*.wav` files, since Android has no MIDI output.
+
+To import a different copy later, long-press the app icon and choose **Import game files**.
+
+### Controls
+
+| Touch | Action |
+| --- | --- |
+| Left half of the screen | Floating joystick (8 directions) |
+| `Z` | Shoot / confirm |
+| `X` | Bomb / cancel |
+| `⇧` | Focus (slide between `Z` and `⇧` to shoot while focused) |
+| `II` / Android back | Pause / menu |
+| `»` | Skip dialogue |
+
+Gamepads and keyboards work too; the touch overlay hides itself when one is used and comes back on the next touch.
+
+### Building
+
+```
+git clone --recursive https://github.com/Brenninho123/th06-mobile.git
+cd th06-mobile/android
+./gradlew assembleRelease
+```
+
+Requirements: JDK 17, Android SDK 35, NDK 27.2.12479018 and CMake 3.22.1 (all installable through the SDK manager).
+The APK is written to `android/app/build/outputs/apk/release/`.
+
+To sign release builds, set `TH06_KEYSTORE_PATH`, `TH06_KEYSTORE_PASSWORD`, `TH06_KEY_ALIAS` and `TH06_KEY_PASSWORD`.
+In GitHub Actions the same values come from the `TH06_KEYSTORE_BASE64`, `TH06_KEYSTORE_PASSWORD`, `TH06_KEY_ALIAS`
+and `TH06_KEY_PASSWORD` secrets; without them the APK is signed with the debug key.
+
+### How the port works
+
+- `CMakeLists.txt` builds the game as `libmain.so` together with SDL2, SDL2_image and SDL2_ttf from the submodules in `android/deps`.
+- The renderer reads the real drawable size at runtime and letterboxes the 640x480 game to 4:3 at native resolution.
+- The game runs from the app's internal storage, where saves, replays and `score.dat` are written.
+- `android/app` contains the launcher/importer activity, the SDL activity and the touch overlay, which sends its button state to the game through JNI.
+
+## Desktop (portable build)
 
 This is the readme for the portable fork of EoSD. For the readme of the decomp project, see [here](https://github.com/GensokyoClub/th06/blob/master/README.md).
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EoSD Mobile</string>
+    <string name="setup_title">Embodiment of Scarlet Devil</string>
+    <string name="setup_description">This app does not include any game data. Select the folder of your own copy of Touhou 6 (v1.02h) with the .DAT files, the bgm folder and optionally msgothic.ttc. The files are copied into the app once.</string>
+    <string name="setup_select_folder">Select game folder</string>
+    <string name="setup_play">Play</string>
+    <string name="setup_copying">Copying %1$s (%2$d%%)</string>
+    <string name="setup_done">Game files imported.</string>
+    <string name="setup_missing">Missing files: %1$s</string>
+    <string name="setup_failed">Import failed: %1$s</string>
+    <string name="setup_existing">Game files are installed. You can play or import a different copy.</string>
+    <string name="shortcut_import">Import game files</string>
+</resources>

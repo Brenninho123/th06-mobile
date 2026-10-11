@@ -41,14 +41,20 @@ GLuint createShader(const char *source, GLenum type, const char *descString, boo
     // This adds a preamble which is slightly different between ES 2.0 and 2.1.
     if (glesContext)
     {
-        fullShaderSource[0] = "#version 100\n"
-                              "precision mediump float;\n";
+        fullShaderSource[0] = "#version 100\n";
 
-        if (SDL_GL_ExtensionSupported("GL_EXT_frag_depth"))
+        if (type == GL_FRAGMENT_SHADER && SDL_GL_ExtensionSupported("GL_EXT_frag_depth"))
         {
             fullShaderSource[shaderSourceIndex++] = "#extension GL_EXT_frag_depth : require\n";
             fullShaderSource[shaderSourceIndex++] = "#define USE_FRAG_DEPTH\n";
         }
+
+        fullShaderSource[shaderSourceIndex++] = type == GL_VERTEX_SHADER ? "precision highp float;\n"
+                                                                         : "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
+                                                                           "precision highp float;\n"
+                                                                           "#else\n"
+                                                                           "precision mediump float;\n"
+                                                                           "#endif\n";
     }
     else
     {
@@ -149,8 +155,8 @@ GfxInterface *WebGL::Create()
     SDL_Init(SDL_INIT_VIDEO);
 
     u32 flags = SDL_WINDOW_OPENGL;
-    i32 height = GAME_WINDOW_HEIGHT_REAL;
-    i32 width = GAME_WINDOW_WIDTH_REAL;
+    i32 height = GAME_WINDOW_HEIGHT_DEFAULT;
+    i32 width = GAME_WINDOW_WIDTH_DEFAULT;
     i32 x = SDL_WINDOWPOS_UNDEFINED;
     i32 y = SDL_WINDOWPOS_UNDEFINED;
 
@@ -158,6 +164,10 @@ GfxInterface *WebGL::Create()
     {
         flags |= SDL_WINDOW_FULLSCREEN;
     }
+
+#ifdef __ANDROID__
+    flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_ALLOW_HIGHDPI;
+#endif
 
     SDL_Window *window = SDL_CreateWindow(TH_WINDOW_TITLE, x, y, width, height, flags);
     interface->window = window;
@@ -445,6 +455,10 @@ void WebGL::SetClearDepth(f32 depth)
 
 void WebGL::SetClearColor(f32 r, f32 g, f32 b, f32 a)
 {
+    this->clearColor[0] = r;
+    this->clearColor[1] = g;
+    this->clearColor[2] = b;
+    this->clearColor[3] = a;
     g_glFuncTable.glClearColor(r, g, b, a);
 }
 
@@ -457,7 +471,7 @@ void WebGL::Clear(u32 clearBits)
     if (clearBits & CLEAR_DEPTH_BUFFER)
         mask |= GL_DEPTH_BUFFER_BIT;
 
-    g_glFuncTable.glClear(mask);
+    GLClearLetterboxed(mask, this->clearColor);
 }
 
 void WebGL::SetDepthMask(bool enable)

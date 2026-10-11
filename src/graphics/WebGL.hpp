@@ -72,6 +72,7 @@ struct WebGL : GfxInterface
   private:
     SDL_Window *window;
     SDL_GLContext glContext;
+    GLfloat clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     bool glesContext;
 
     GLuint fragmentShaderHandle;

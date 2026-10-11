@@ -65,6 +65,8 @@ project "th06"
     "src/Stage.cpp",
     "src/Supervisor.cpp",
     "src/TextHelper.cpp",
+    "src/TouchInput.cpp",
+    "src/Platform.cpp",
     "src/ZunMath.cpp",
     "src/utils.cpp",
     "src/ZunTimer.cpp",
